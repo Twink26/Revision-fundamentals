@@ -1,30 +1,37 @@
 import { useState } from "react"
 
 function App() {
-  const [text, setText] = useState("")
+  const [task, setTask] = useState("")
+  const [todos, setTodos] = useState([])
 
   function handleChange(e) {
-    setText(e.target.value)
+    setTask(e.target.value)
   }
 
-  function clearText() {
-    setText("")
+  function addTodo() {
+    if (task.trim() === "") return
+    setTodos([...todos, { id: Date.now(), text: task }])
+    setTask("")
   }
 
   return (
     <>
-      <h1>Live Text Preview</h1>
+      <h1>Todo list</h1>
 
-      <input 
-        type="text" 
-        value={text} 
+      <input
+        type="text"
+        value={task}
         onChange={handleChange}
-        placeholder="Type something..."
+        placeholder="Enter task..."
       />
 
-      <p>You typed: {text}</p>
+      <button onClick={addTodo}>Add</button>
 
-      <button onClick={clearText}>Clear</button>
+      <ul>
+        {todos.map((todo) => (
+          <li key={todo.id}>{todo.text}</li>
+        ))}
+      </ul>
     </>
   )
 }
