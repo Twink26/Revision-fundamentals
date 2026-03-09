@@ -1,27 +1,32 @@
-import {useState } from 'react';
+import { useState } from "react"
+
 function App() {
-  const [count, setCount] = useState(0);
-  function increment() {
-    setCount(count + 1);
-  }
-  function decrement() {
-    if (count > 0) {
-      setCount(count - 1);
-    }
+  const [text, setText] = useState("")
+
+  function handleChange(e) {
+    setText(e.target.value)
   }
 
-  function reset() {
-    setCount(0);
+  function clearText() {
+    setText("")
   }
+
   return (
     <>
-    <h1> Counter App</h1>
-    <h2>{count}</h2>
-    <button onClick={increment}>Increment</button>
-    <button onClick={decrement}>Decrement</button>
-    <button onClick={reset}>Reset</button>
-    </>
+      <h1>Live Text Preview</h1>
 
+      <input 
+        type="text" 
+        value={text} 
+        onChange={handleChange}
+        placeholder="Type something..."
+      />
+
+      <p>You typed: {text}</p>
+
+      <button onClick={clearText}>Clear</button>
+    </>
   )
 }
-export default App;
+
+export default App
