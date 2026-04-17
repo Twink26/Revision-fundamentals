@@ -1,67 +1,40 @@
-import { useState, useEffect } from 'react';
+import { useState } from "react"
+
+const items = [
+  "React Basics",
+  "Advanced React",
+  "JavaScript Mastery",
+  "Node.js Guide",
+  "CSS Flexbox",
+  "React Hooks",
+  "MongoDB Intro"
+]
 
 function App() {
-  const [inputValue, setInputValue] = useState(""); // Track typing
-  const [username, setUsername] = useState("");     // Trigger fetch
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [search, setSearch] = useState("")
 
-  useEffect(() => {
-    if (!username) return;
-
-    let isIgnore = false; // Prevents race conditions
-    setLoading(true);
-    setError(null);
-
-    fetch(`https://api.github.com/users/${username}`)
-      .then(res => {
-        if (!res.ok) throw new Error("User not found");
-        return res.json();
-      })
-      .then(data => {
-        if (!isIgnore) {
-          setUserData(data);
-          setLoading(false);
-        }
-      })
-      .catch((err) => {
-        if (!isIgnore) {
-          setError(err.message);
-          setUserData(null);
-          setLoading(false);
-        }
-      });
-
-    return () => { isIgnore = true; }; // Cleanup function
-  }, [username]);
+  const filteredItems = items.filter(item =>
+    item.toLowerCase().includes(search.toLowerCase())
+  )
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Github Profile Viewer</h1>
+    <>
+      <h1>Search Filter</h1>
+
       <input
         type="text"
-        placeholder="Enter Github username"
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") setUsername(inputValue);
-        }}
+        placeholder="Search..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
       />
-      
-      {loading && <p>Loading...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      {userData && !loading && (
-        <div style={{ marginTop: '20px' }}>
-          <img src={userData.avatar_url} alt="avatar" width="100" style={{ borderRadius: '50%' }}/>
-          <h2>{userData.name || userData.login}</h2>
-          <p>Followers: {userData.followers}</p>
-          <p>Public Repos: {userData.public_repos}</p>
-        </div>
-      )}
-    </div>
-  );
+      <ul>
+        {filteredItems.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+    </>
+  )
 }
 
-export default App;
+export default App
