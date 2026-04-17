@@ -1,36 +1,43 @@
-import { useState } from "react"
-
-const items = [
-  "React Basics",
-  "Advanced React",
-  "JavaScript Mastery",
-  "Node.js Guide",
-  "CSS Flexbox",
-  "React Hooks",
-  "MongoDB Intro"
-]
+import { useState, useEffect } from "react"
 
 function App() {
-  const [search, setSearch] = useState("")
+  const [query, setQuery] = useState("")
+  const [debouncedQuery, setDebouncedQuery] = useState("")
+  const [results, setResults] = useState([])
 
-  const filteredItems = items.filter(item =>
-    item.toLowerCase().includes(search.toLowerCase())
-  )
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(query)
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [query])
+
+  useEffect(() => {
+    if (debouncedQuery === "") return
+
+    fetch(`https://api.github.com/search/users?q=${debouncedQuery}`)
+      .then(res => res.json())
+      .then(data => {
+        setResults(data.items || [])
+      })
+  }, [debouncedQuery])
 
   return (
     <>
-      <h1>Search Filter</h1>
+      <h1>Debounced Search</h1>
 
       <input
         type="text"
-        placeholder="Search..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search GitHub users..."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
       />
 
       <ul>
-        {filteredItems.map((item, index) => (
-          <li key={index}>{item}</li>
+        {results.map(user => (
+          <li key={user.id}>{user.login}</li>
         ))}
       </ul>
     </>
